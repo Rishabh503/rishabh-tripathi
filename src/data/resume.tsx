@@ -49,19 +49,19 @@ export const DATA = {
       },
       LinkedIn: {
         name: "LinkedIn",
-        url: "https://www.linkedin.com/in/rishabh-tripathi-570148257/",
+        url: "https://www.linkedin.com/in/rishabh-tripathi-9985aa319/",
         icon: Icons.linkedin,
         navbar: true,
       },
       LeetCode: {
         name: "LeetCode",
-        url: "https://leetcode.com/u/rishabhiscool/",
+        url: "https://leetcode.com/u/Rishabh2906/",
         icon: Icons.globe,
         navbar: true,
       },
       Portfolio: {
         name: "Portfolio",
-        url: "https://rishabhtripathi.vercel.app",
+        url: "https://rishabh-tripathi-xi.vercel.app/",
         icon: Icons.globe,
         navbar: false,
       },
@@ -122,6 +122,7 @@ export const DATA = {
         "Supabase",
         "Clerk",
       ],
+      image:'./projects/lessonstart.png',
       links: [
         {
           type: "Website",
@@ -134,7 +135,6 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
       video: "",
     },
     {
@@ -165,7 +165,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "./projects/quickai.png",
       video: "",
     },
     {
@@ -194,7 +194,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "./projects/tamshabhawan.png",
       video: "",
     },
     {
@@ -224,7 +224,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "./projects/expense.png",
       video: "",
     },
     {
@@ -247,7 +247,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "./projects/internalmarks.png",
       video: "",
     },
     {
@@ -276,7 +276,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "./projects/edunite.png",
       video: "",
     },
     {
@@ -299,7 +299,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "./projects/workflow.png",
       video: "",
     },
     {
