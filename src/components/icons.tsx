@@ -1,8 +1,15 @@
-import { GlobeIcon, MailIcon } from "lucide-react";
+import { GlobeIcon, MailIcon, FileText } from "lucide-react";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
 
 export const Icons = {
+  leetcode: (props: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <title>LeetCode</title>
+      <path d="M16.102 17.93l-2.69 2.607c-.466.467-1.111.662-1.744.53a5.86 5.86 0 0 1-3.65-2.002 5.86 5.86 0 0 1-1.687-3.812c-.17-.63.023-1.295.49-1.762L11.75 8.76a.434.434 0 0 1 .614 0l1.229 1.228a.434.434 0 0 1 0 .614L10.74 13.43a1.953 1.953 0 0 0 0 2.76 1.953 1.953 0 0 0 2.76 0l2.607-2.69c.373-.373.974-.373 1.347 0l1.228 1.228c.373.373.373.974 0 1.347l-2.58 2.58v-.025zm-2.613-9.52c-.373-.373-.373-.974 0-1.347l2.69-2.607c.467-.467 1.112-.662 1.745-.53a5.859 5.859 0 0 1 3.65 2.003 5.859 5.859 0 0 1 1.686 3.812c.17.63-.022 1.295-.489 1.762L17.89 16.32a.434.434 0 0 1-.614 0l-1.229-1.228a.434.434 0 0 1 0-.614l2.853-2.822a1.953 1.953 0 0 0 0-2.76 1.953 1.953 0 0 0-2.76 0l-2.607 2.69a.952.952 0 0 1-1.347 0l-1.228-1.228-.007.002z" />
+    </svg>
+  ),
+  resume: (props: IconProps) => <FileText {...props} />,
   globe: (props: IconProps) => <GlobeIcon {...props} />,
   email: (props: IconProps) => <MailIcon {...props} />,
   linkedin: (props: IconProps) => (
