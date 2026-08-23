@@ -12,7 +12,13 @@ import {
 } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 
-export default function Navbar() {
+import { cn } from "@/lib/utils";
+
+interface NavbarProps {
+  isChatOpen?: boolean;
+}
+
+export default function Navbar({ isChatOpen = false }: NavbarProps) {
   const pathname = usePathname();
 
   // Hide the navbar on links and admin pages
@@ -21,7 +27,14 @@ export default function Navbar() {
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30">
+    <div 
+      className={cn(
+        "pointer-events-none fixed bottom-4 z-30 transition-all duration-500 ease-in-out",
+        isChatOpen 
+          ? "left-0 w-full md:w-1/2" 
+          : "inset-x-0"
+      )}
+    >
       <Dock className="z-50 pointer-events-auto relative h-14 p-2 w-fit mx-auto flex gap-2 border bg-card/90 backdrop-blur-3xl shadow-[0_0_10px_3px] shadow-primary/5">
         {DATA.navbar.map((item) => {
           const isExternal = item.href.startsWith("http");
