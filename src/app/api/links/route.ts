@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { verifyAdminPassword, verifySessionToken } from "@/lib/admin-auth";
 
 const DATA_FILE_PATH = path.join(
   process.cwd(),
@@ -37,43 +38,42 @@ function saveLinksToFile(links: any[]) {
   }
 }
 
-export async function GET(request: Request) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  const isPasswordProtected = !!adminPassword;
+function isAuthorized(req: NextRequest): boolean {
+  const sessionToken = req.cookies.get("portfolio_admin_token")?.value;
+  const headerPassword = req.headers.get("x-admin-password");
 
-  if (isPasswordProtected) {
-    const { searchParams } = new URL(request.url);
-    const clientPassword = request.headers.get("x-admin-password") || searchParams.get("password");
-
-    if (clientPassword !== adminPassword) {
-      return NextResponse.json({
-        success: true,
-        links: [],
-        isPasswordProtected,
-        isAuthorized: false,
-      });
-    }
+  if (sessionToken && verifySessionToken(sessionToken)) {
+    return true;
   }
+  if (headerPassword && verifyAdminPassword(headerPassword)) {
+    return true;
+  }
+  return false;
+}
 
+export async function GET(request: NextRequest) {
   const links = getLinksFromFile();
+  const authorized = isAuthorized(request);
+
   return NextResponse.json({
     success: true,
     links,
-    isPasswordProtected,
-    isAuthorized: true,
+    isAuthorized: authorized,
   });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const authorized = isAuthorized(request);
     const body = await request.json();
     const { links, password } = body;
 
-    // Optional environment variable password protection
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (adminPassword && password !== adminPassword) {
+    // Check body password if session cookie / header password wasn't set
+    const bodyAuthorized = password && verifyAdminPassword(password);
+
+    if (!authorized && !bodyAuthorized) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized access. Invalid password." },
+        { success: false, error: "Unauthorized access. Invalid password or expired session." },
         { status: 401 }
       );
     }
@@ -101,3 +101,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

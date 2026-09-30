@@ -1,0 +1,422 @@
+{
+  "name": "Rishabh Tripathi",
+  "initials": "RT",
+  "url": "https://rishabhtripathi.vercel.app",
+  "location": "New Delhi, India",
+  "locationLink": "https://www.google.com/maps/place/newdelhi",
+  "description": "B.Tech Student & Full-Stack Developer passionate about building AI-powered applications. I love creating intelligent solutions that solve real-world problems.",
+  "summary": "I'm a Computer Science & Technology student at MAIT, Delhi, and a Full-Stack AI Developer passionate about building intelligent, practical web applications. I work with technologies like Next.js, React, Node.js, Python, FastAPI, LLMs, RAG, and AI agents, building products end-to-end from AI pipelines and APIs to polished user interfaces. I've also worked at DRDO's Scientific Analysis Group on an explainable AI system for cryptographic analysis, and I enjoy exploring the intersection of AI and full-stack development to turn ideas into useful, production-ready products.\n",
+  "avatarUrl": "/image.png",
+  "skills": [
+    {
+      "name": "React",
+      "icon": "react"
+    },
+    {
+      "name": "Next.js",
+      "icon": "nextjs"
+    },
+    {
+      "name": "Typescript",
+      "icon": "typescript"
+    },
+    {
+      "name": "Node.js",
+      "icon": "nodejs"
+    },
+    {
+      "name": "Python",
+      "icon": "python"
+    },
+    {
+      "name": "Java",
+      "icon": "java"
+    },
+    {
+      "name": "C++",
+      "icon": "csharp"
+    },
+    {
+      "name": "Postgres",
+      "icon": "postgresql"
+    },
+    {
+      "name": "MongoDB",
+      "icon": "docker"
+    },
+    {
+      "name": "New Skill",
+      "icon": "cpu"
+    }
+  ],
+  "contact": {
+    "email": "rishabhtripathi2022@gmail.com",
+    "tel": "+919650594608",
+    "social": {
+      "GitHub": {
+        "name": "GitHub",
+        "url": "https://github.com/Rishabh503",
+        "icon": "github",
+        "navbar": true
+      },
+      "LinkedIn": {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com/in/rishabh-tripathi-9985aa319/",
+        "icon": "linkedin",
+        "navbar": true
+      },
+      "LeetCode": {
+        "name": "LeetCode",
+        "url": "https://leetcode.com/u/Rishabh2906/",
+        "icon": "leetcode",
+        "navbar": true
+      },
+      "Portfolio": {
+        "name": "Portfolio",
+        "url": "https://rishabh-tripathi-xi.vercel.app/",
+        "icon": "globe",
+        "navbar": false
+      },
+      "email": {
+        "name": "Send Email",
+        "url": "mailto:rishabhtripathi2022@gmail.com",
+        "icon": "email",
+        "navbar": false
+      }
+    }
+  },
+  "work": [
+    {
+      "company": "DRDO - Scientific Analysis Group (SAG)",
+      "href": "https://www.drdo.gov.in/",
+      "badges": [],
+      "location": "New Delhi, India",
+      "title": "Industrial Trainee",
+      "logoUrl": "/drdo.png",
+      "start": "July 2025",
+      "end": "August 2025",
+      "description": "Designed and developed a full-stack web application for cipher file analysis with explainable AI integration. Implemented ML models (Random Forest, XGBoost, Gradient Boosting) achieving up to 64.3% accuracy in distinguishing ciphertext from random sequences. Integrated SHAP for model interpretability, enhancing transparency of cryptographic security analysis. Delivered an end-to-end system contributing to DRDO's cryptanalytic research capabilities."
+    }
+  ],
+  "education": [
+    {
+      "school": "Maharaja Agrasen Institute of Technology",
+      "href": "https://www.mait.ac.in/",
+      "degree": "B.Tech - Computer Science and Technology",
+      "logoUrl": "/mait.png",
+      "start": "2023",
+      "end": "2027"
+    },
+    {
+      "school": "School Of Excellence",
+      "href": "#",
+      "degree": "Senior Secondary (CBSE) - 90.2%",
+      "logoUrl": "/school.png",
+      "start": "2021",
+      "end": "2022"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj_1790762923303",
+      "title": "VideoInsights — Video Intelligence & RAG Assistant",
+      "href": "",
+      "dates": "2026",
+      "active": true,
+      "description": "Built a full-stack video intelligence platform that processes YouTube videos and local media using automated speech-to-text, structured analysis, executive summaries, action items, key decisions, and conversational Q&A. Implemented a LangChain RAG pipeline with ChromaDB for transcript embedding and context-aware retrieval, backed by FastAPI REST APIs and an interactive React interface.",
+      "technologies": [
+        "React",
+        "Tailwind CSS",
+        "FastAPI",
+        "ChromaDB",
+        "Whisper",
+        "RAG",
+        "LangChain"
+      ],
+      "image": "/projects/screenshot_2026-09-30_160630_1790764596762.png",
+      "video": "https://drive.google.com/file/d/1ZXEIGD0mU9NapT0oKF7BSjk3h3RWHFs0/view",
+      "links": [
+        {
+          "type": "Source",
+          "href": "https://drive.google.com/file/d/1ZXEIGD0mU9NapT0oKF7BSjk3h3RWHFs0/view",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_lesson_start",
+      "title": "AI Course Generator (Lesson Start)",
+      "href": "https://freestand-genui.vercel.app/",
+      "dates": "2024 - Present",
+      "active": true,
+      "description": "Built an AI-driven lesson generation platform that converts user prompts into complete, structured lessons with validated React UI output. Integrated LangChain, LangGraph, and Gemini to create a multi-step pipeline for prompt analysis, UI generation, code validation, and auto-fixing. Implemented Supabase storage and Clerk authentication for secure, user-specific lesson history.",
+      "technologies": [
+        "Next.js",
+        "LangChain",
+        "LangGraph",
+        "Gemini",
+        "Supabase",
+        "Clerk"
+      ],
+      "image": "/projects/lessonstart.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://freestand-genui.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/Rishabh503/freestand-genui",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_quickai",
+      "title": "QuickAI",
+      "href": "https://quickai-kappa.vercel.app/",
+      "dates": "2024 - Present",
+      "active": true,
+      "description": "Built a full-stack AI platform with tools like Resume Analyzer, Blog Generator, YouTube Video Analyzer, Background Remover, and Object Remover using Next.js, React, Tailwind CSS, and AI APIs. Integrated Clerk-based authentication and subscription plans, with Neon PostgreSQL for scalable storage of user data, feature usage, and activity logs.",
+      "technologies": [
+        "Node.js",
+        "React",
+        "Express",
+        "Tailwind CSS",
+        "PostgreSQL",
+        "Clerk",
+        "Neon DB"
+      ],
+      "image": "/projects/quickai.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://quickai-kappa.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/Rishabh503/quickai",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_1790762615251",
+      "title": "CBD-Create:Buzz:Disrupt",
+      "href": "https://cbd-eta.vercel.app/",
+      "dates": "2026",
+      "active": true,
+      "description": "Built a modern, interactive marketing platform that connects brands, creators, businesses, colleges, and communities through a structured collaboration ecosystem. Designed responsive sections for campaign workflows, partner showcases, interactive verticals, testimonials, and lead-generation, with a strong focus on visual storytelling and user experience.",
+      "technologies": [
+        "Next.js",
+        "React",
+        "Tailwind CSS"
+      ],
+      "image": "/projects/screenshot_2026-09-30_160702_1790764629560.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://cbd-eta.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/ridhig1602/cbd",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_tamasha_bhawan",
+      "title": "Tamasha Bhawan",
+      "href": "https://www.tamashabhawan.com/",
+      "dates": "2024 - Present",
+      "active": true,
+      "description": "Tamasha Bhawan is a learning platform where users can buy courses related to music and learn music. Built with modern web technologies to provide an intuitive and engaging learning experience for music enthusiasts.",
+      "technologies": [
+        "Next.js",
+        "Prisma",
+        "Gemini AI",
+        "Clerk",
+        "TailwindCSS"
+      ],
+      "image": "/projects/tamshabhawan.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://www.tamashabhawan.com/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/Rishabh503/tamasha-bhwawan-new",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_expense_tracker",
+      "title": "AI-Powered Expense Tracker",
+      "href": "https://expense-next-ax96.vercel.app/",
+      "dates": "2024",
+      "active": true,
+      "description": "Architected a full-stack AI expense tracker using Next.js, Prisma, and PostgreSQL. Integrated the Google Gemini API to deliver intelligent expense categorization and generate deep, personalized financial insights. Engineered a secure user experience with Clerk authentication and dynamic UI with Tailwind CSS, featuring interactive charts for intuitive data visualization.",
+      "technologies": [
+        "Next.js",
+        "Prisma",
+        "PostgreSQL",
+        "Gemini AI",
+        "Clerk",
+        "TailwindCSS"
+      ],
+      "image": "/projects/expense.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://expense-next-ax96.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/Rishabh503/expenseNext",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_internal_marks",
+      "title": "Internal Marks",
+      "href": "https://internal-marks-woad.vercel.app/",
+      "dates": "2024",
+      "active": true,
+      "description": "Internal marks is a website for students of IPU, where they can input their internal marks and get an idea about how much they need to score in the final exams. Built with React.js and Tailwind CSS for a clean and responsive interface.",
+      "technologies": [
+        "React.js",
+        "Tailwind CSS"
+      ],
+      "image": "/projects/internalmarks.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://internal-marks-woad.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "http://github.com/Rishabh503/internal-marks",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_edunite",
+      "title": "Edunite",
+      "href": "https://edunite-chi.vercel.app/",
+      "dates": "2024",
+      "active": true,
+      "description": "Edunite was a hackathon project built to create an educational platform. Features include course management, user authentication, and a clean interface for students and educators to connect and share knowledge.",
+      "technologies": [
+        "Node.js",
+        "React.js",
+        "Gemini",
+        "Tailwind CSS",
+        "MongoDB"
+      ],
+      "image": "/projects/edunite.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://edunite-chi.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/Rishabh503/edunite",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_workflow",
+      "title": "Workflow",
+      "href": "https://workflow-nu-hazel.vercel.app/",
+      "dates": "2024",
+      "active": true,
+      "description": "Workflow is a project which can be used by users to track their tasks subject to an enhanced todo manager. Built with Next.js, Gemini AI, Tailwind CSS, and MongoDB for intelligent task management and organization.",
+      "technologies": [
+        "Next.js",
+        "Gemini",
+        "Tailwind CSS",
+        "MongoDB"
+      ],
+      "image": "/projects/workflow.png",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://workflow-nu-hazel.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/Rishabh503/workflow",
+          "icon": "github"
+        }
+      ]
+    },
+    {
+      "id": "proj_innovave",
+      "title": "Innovave",
+      "href": "https://innovave-rust.vercel.app/",
+      "dates": "2024",
+      "active": true,
+      "description": "Innovave is a basic website built with React.js and Tailwind CSS. It serves as a clean, responsive landing page showcasing modern web design principles and best practices.",
+      "technologies": [
+        "React.js",
+        "Tailwind CSS"
+      ],
+      "image": "",
+      "video": "",
+      "links": [
+        {
+          "type": "Website",
+          "href": "https://innovave-rust.vercel.app/",
+          "icon": "globe"
+        },
+        {
+          "type": "Source",
+          "href": "https://github.com/Rishabh503/innovave",
+          "icon": "github"
+        }
+      ]
+    }
+  ],
+  "chatbot": {
+    "suggestions": [
+      "What are Rishabh's technical skills?",
+      "Tell me about his DRDO work experience",
+      "What did he build for Lesson Start?",
+      "How can I contact Rishabh?"
+    ],
+    "triviaFacts": [
+      "Rishabh is currently in his 7th semester at MAIT with a strong 8.9 CGPA.",
+      "He built 'Tamasha Bhawan', a music learning platform built with Next.js, Prisma, and Gemini AI.",
+      "During his 6-week internship at DRDO's Scientific Analysis Group, Rishabh developed explainable AI models for cryptographic security analysis.",
+      "Rishabh speaks English, Hindi, and Punjabi fluently.",
+      "He won a college cricket tournament representing MAIT as team captain.",
+      "Rishabh has zero active backlogs in his B.Tech Computer Science and Technology curriculum.",
+      "He is available immediately for internships or full-time roles, open to relocating to Pune, Mumbai, Hyderabad, Chennai, and Bangalore.",
+      "Rishabh built an exciting new project having a Multi-Agent System to create interactive lessons",
+      "Checkout his latest project called VideoInsights where he built a rag engine"
+    ]
+  }
+}

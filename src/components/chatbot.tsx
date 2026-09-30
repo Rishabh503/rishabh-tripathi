@@ -26,29 +26,33 @@ interface Message {
   timestamp: number;
 }
 
-const SUGGESTIONS = [
-  "What are Rishabh's technical skills?",
-  "Tell me about his DRDO work experience",
-  "What did he build for Lesson Start?",
-  "How can I contact Rishabh?",
-];
+const SUGGESTIONS = (DATA.chatbot && DATA.chatbot.suggestions && DATA.chatbot.suggestions.length > 0)
+  ? DATA.chatbot.suggestions
+  : [
+      "What are Rishabh's technical skills?",
+      "Tell me about his DRDO work experience",
+      "What did he build for Lesson Start?",
+      "How can I contact Rishabh?",
+    ];
 
 interface ChatbotProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-const TRIVIA_FACTS = [
-  "Rishabh is currently in his 7th semester at MAIT with a strong 8.9 CGPA.",
-  "He built 'Tamasha Bhawan', a music learning platform built with Next.js, Prisma, and Gemini AI.",
-  "During his 6-week internship at DRDO's Scientific Analysis Group, Rishabh developed explainable AI models for cryptographic security analysis.",
-  "Rishabh speaks English, Hindi, and Punjabi fluently.",
-  "He won a college cricket tournament representing MAIT as team captain.",
-  "He built 'Workflow', an AI-powered academic task tracker utilizing Next.js and MongoDB.",
-  "He built 'Edunite', a hackathon project featuring course management and automated assignment grading.",
-  "Rishabh has zero active backlogs in his B.Tech Computer Science and Technology curriculum.",
-  "He is available immediately for internships or full-time roles, open to relocating to Pune, Mumbai, Hyderabad, Chennai, and Bangalore."
-];
+const TRIVIA_FACTS = (DATA.chatbot && DATA.chatbot.triviaFacts && DATA.chatbot.triviaFacts.length > 0)
+  ? DATA.chatbot.triviaFacts
+  : [
+      "Rishabh is currently in his 7th semester at MAIT with a strong 8.9 CGPA.",
+      "He built 'Tamasha Bhawan', a music learning platform built with Next.js, Prisma, and Gemini AI.",
+      "During his 6-week internship at DRDO's Scientific Analysis Group, Rishabh developed explainable AI models for cryptographic security analysis.",
+      "Rishabh speaks English, Hindi, and Punjabi fluently.",
+      "He won a college cricket tournament representing MAIT as team captain.",
+      "He built 'Workflow', an AI-powered academic task tracker utilizing Next.js and MongoDB.",
+      "He built 'Edunite', a hackathon project featuring course management and automated assignment grading.",
+      "Rishabh has zero active backlogs in his B.Tech Computer Science and Technology curriculum.",
+      "He is available immediately for internships or full-time roles, open to relocating to Pune, Mumbai, Hyderabad, Chennai, and Bangalore."
+    ];
 
 export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([]);

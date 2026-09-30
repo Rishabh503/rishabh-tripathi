@@ -1,10 +1,16 @@
 import BlurFade from "@/components/magicui/blur-fade";
 import { ProjectCard } from "@/components/project-card";
-import { DATA } from "@/data/resume";
+import { getResumeData, ProjectEntry } from "@/data/resume";
 
 const BLUR_FADE_DELAY = 0.04;
 
-export default function ProjectsSection() {
+interface ProjectsSectionProps {
+  projects?: ProjectEntry[];
+}
+
+export default function ProjectsSection({ projects: customProjects }: ProjectsSectionProps) {
+  const data = getResumeData();
+  const projectsList = customProjects || data.projects;
     return (
         <section id="projects">
             <div className="flex min-h-0 flex-col gap-y-8">
@@ -32,7 +38,7 @@ export default function ProjectsSection() {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-[800px] mx-auto auto-rows-fr">
-                    {DATA.projects.map((project, id) => (
+                    {projectsList.filter((p) => p.active !== false).map((project, id) => (
                         <BlurFade
                             key={project.title}
                             delay={BLUR_FADE_DELAY * 12 + id * 0.05}

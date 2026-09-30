@@ -22,7 +22,7 @@ export default function Navbar({ isChatOpen = false }: NavbarProps) {
   const pathname = usePathname();
 
   // Hide the navbar on links and admin pages
-  if (pathname?.startsWith("/links")) {
+  if (pathname?.startsWith("/links") || pathname?.startsWith("/admin")) {
     return null;
   }
 
