@@ -10,17 +10,73 @@ const DATA_FILE_PATH = path.join(
   "links.json"
 );
 
+const DEFAULT_LINKS = [
+  {
+    id: "github",
+    title: "GitHub",
+    url: "https://github.com/Rishabh503",
+    icon: "github",
+    isEnabled: true,
+    order: 1,
+  },
+  {
+    id: "leetcode",
+    title: "LeetCode",
+    url: "https://leetcode.com/u/Rishabh2906/",
+    icon: "leetcode",
+    isEnabled: true,
+    order: 2,
+  },
+  {
+    id: "portfolio",
+    title: "Portfolio Website",
+    url: "https://rishabh-tripathi-xi.vercel.app/",
+    icon: "globe",
+    isEnabled: true,
+    order: 3,
+  },
+  {
+    id: "resume",
+    title: "Resume",
+    url: "https://drive.google.com/file/d/1PReRNpW5eE_1fltAQ_gN_dgKUgVPAL7z/view?usp=drive_link",
+    icon: "resume",
+    isEnabled: true,
+    order: 4,
+  },
+  {
+    id: "linkedin",
+    title: "LinkedIn",
+    url: "https://www.linkedin.com/in/rishabh-tripathi-9985aa319/",
+    icon: "linkedin",
+    isEnabled: true,
+    order: 5,
+  },
+  {
+    id: "email",
+    title: "Contact Email",
+    url: "mailto:rishabhtripathi2022@gmail.com",
+    icon: "email",
+    isEnabled: true,
+    order: 6,
+  },
+];
+
 function getLinksFromFile() {
   try {
     if (!fs.existsSync(DATA_FILE_PATH)) {
-      return [];
+      saveLinksToFile(DEFAULT_LINKS);
+      return DEFAULT_LINKS;
     }
     const fileContents = fs.readFileSync(DATA_FILE_PATH, "utf8");
     const links = JSON.parse(fileContents);
+    if (!Array.isArray(links) || links.length === 0) {
+      saveLinksToFile(DEFAULT_LINKS);
+      return DEFAULT_LINKS;
+    }
     return links.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch (error) {
     console.error("Error reading links file:", error);
-    return [];
+    return DEFAULT_LINKS;
   }
 }
 

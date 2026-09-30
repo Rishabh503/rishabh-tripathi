@@ -136,15 +136,69 @@ export default function AdminPage() {
     }
   };
 
+  const DEFAULT_SEED_LINKS: LinkItem[] = [
+    {
+      id: "github",
+      title: "GitHub",
+      url: "https://github.com/Rishabh503",
+      icon: "github",
+      isEnabled: true,
+      order: 1,
+    },
+    {
+      id: "leetcode",
+      title: "LeetCode",
+      url: "https://leetcode.com/u/Rishabh2906/",
+      icon: "leetcode",
+      isEnabled: true,
+      order: 2,
+    },
+    {
+      id: "portfolio",
+      title: "Portfolio Website",
+      url: "https://rishabh-tripathi-xi.vercel.app/",
+      icon: "globe",
+      isEnabled: true,
+      order: 3,
+    },
+    {
+      id: "resume",
+      title: "Resume",
+      url: "https://drive.google.com/file/d/1PReRNpW5eE_1fltAQ_gN_dgKUgVPAL7z/view?usp=drive_link",
+      icon: "resume",
+      isEnabled: true,
+      order: 4,
+    },
+    {
+      id: "linkedin",
+      title: "LinkedIn",
+      url: "https://www.linkedin.com/in/rishabh-tripathi-9985aa319/",
+      icon: "linkedin",
+      isEnabled: true,
+      order: 5,
+    },
+    {
+      id: "email",
+      title: "Contact Email",
+      url: "mailto:rishabhtripathi2022@gmail.com",
+      icon: "email",
+      isEnabled: true,
+      order: 6,
+    },
+  ];
+
   const loadLinksData = async () => {
     try {
       const res = await fetch("/api/links");
       const result = await res.json();
-      if (result.success && Array.isArray(result.links)) {
+      if (result.success && Array.isArray(result.links) && result.links.length > 0) {
         setLinks(result.links);
+      } else {
+        setLinks(DEFAULT_SEED_LINKS);
       }
     } catch (err) {
       console.error("Failed to load quick links:", err);
+      setLinks(DEFAULT_SEED_LINKS);
     }
   };
 
@@ -473,6 +527,11 @@ export default function AdminPage() {
       l.order = idx + 1;
     });
     setLinks(newLinks);
+  };
+
+  const handleResetDefaultLinks = () => {
+    setLinks(DEFAULT_SEED_LINKS);
+    notify("success", "Loaded default quick links (GitHub, LeetCode, Portfolio, Resume, LinkedIn, Email). Click 'Save All Changes' to save!");
   };
 
   // Render Loading Spinner
@@ -1077,13 +1136,23 @@ export default function AdminPage() {
                 Manage the public links displayed on your <Link href="/links" target="_blank" className="text-primary underline">/links</Link> page.
               </p>
             </div>
-            <button
-              onClick={addLinkItem}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground font-semibold text-xs rounded-xl hover:opacity-90 active:scale-[0.98] transition-all shadow-sm cursor-pointer"
-            >
-              <Plus className="size-4" />
-              Add New Link
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleResetDefaultLinks}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 border border-border bg-card hover:bg-muted text-foreground font-semibold text-xs rounded-xl hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer"
+                title="Seed standard default links (GitHub, LeetCode, Portfolio, Resume, LinkedIn, Email)"
+              >
+                <RefreshCw className="size-3.5 text-primary" />
+                <span>Seed Default Links</span>
+              </button>
+              <button
+                onClick={addLinkItem}
+                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-semibold text-xs rounded-xl hover:opacity-90 active:scale-[0.98] transition-all shadow-sm cursor-pointer"
+              >
+                <Plus className="size-4" />
+                <span>Add New Link</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3.5">
@@ -1197,8 +1266,22 @@ export default function AdminPage() {
             ))}
 
             {links.length === 0 && (
-              <div className="text-center py-12 border border-dashed rounded-2xl text-muted-foreground text-sm">
-                No quick links configured yet. Click "+ Add New Link" to start.
+              <div className="text-center py-12 border border-dashed rounded-2xl text-muted-foreground text-sm space-y-3">
+                <p>No quick links configured yet.</p>
+                <div className="flex justify-center gap-2">
+                  <button
+                    onClick={handleResetDefaultLinks}
+                    className="px-4 py-2 bg-primary/10 border border-primary/30 text-primary rounded-xl text-xs font-semibold hover:bg-primary/20 transition-all cursor-pointer"
+                  >
+                    Seed Standard Default Links
+                  </button>
+                  <button
+                    onClick={addLinkItem}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:opacity-90 transition-all cursor-pointer"
+                  >
+                    + Add New Link
+                  </button>
+                </div>
               </div>
             )}
           </div>
