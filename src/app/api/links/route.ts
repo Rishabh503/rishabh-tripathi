@@ -61,7 +61,27 @@ const DEFAULT_LINKS = [
   },
 ];
 
+let linksMemoryCache: any[] | null = null;
+const TMP_LINKS_PATH = path.join("/tmp", "links_cache.json");
+
 function getLinksFromFile() {
+  if (linksMemoryCache && linksMemoryCache.length > 0) {
+    return linksMemoryCache;
+  }
+
+  try {
+    if (fs.existsSync(TMP_LINKS_PATH)) {
+      const fileContents = fs.readFileSync(TMP_LINKS_PATH, "utf8");
+      const links = JSON.parse(fileContents);
+      if (Array.isArray(links) && links.length > 0) {
+        linksMemoryCache = links;
+        return links.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      }
+    }
+  } catch (err) {
+    // ignore tmp read error
+  }
+
   try {
     if (!fs.existsSync(DATA_FILE_PATH)) {
       saveLinksToFile(DEFAULT_LINKS);
@@ -73,6 +93,7 @@ function getLinksFromFile() {
       saveLinksToFile(DEFAULT_LINKS);
       return DEFAULT_LINKS;
     }
+    linksMemoryCache = links;
     return links.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch (error) {
     console.error("Error reading links file:", error);
@@ -81,6 +102,17 @@ function getLinksFromFile() {
 }
 
 function saveLinksToFile(links: any[]) {
+  linksMemoryCache = links;
+
+  // Sync to GitHub repo if GITHUB_TOKEN is available
+  const githubToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  const repo = process.env.GITHUB_REPO || "Rishabh503/rishabh-tripathi";
+  if (githubToken) {
+    syncToGitHub(repo, "src/data/links.json", JSON.stringify(links, null, 2), githubToken).catch((e) =>
+      console.warn("GitHub links sync warning:", e)
+    );
+  }
+
   try {
     const dir = path.dirname(DATA_FILE_PATH);
     if (!fs.existsSync(dir)) {
@@ -89,10 +121,52 @@ function saveLinksToFile(links: any[]) {
     fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(links, null, 2), "utf8");
     return true;
   } catch (error) {
-    console.error("Error writing links file:", error);
-    return false;
+    try {
+      if (!fs.existsSync("/tmp")) {
+        fs.mkdirSync("/tmp", { recursive: true });
+      }
+      fs.writeFileSync(TMP_LINKS_PATH, JSON.stringify(links, null, 2), "utf8");
+      return true;
+    } catch (tmpErr) {
+      console.warn("Could not write links to /tmp, kept in memory:", tmpErr);
+      return true;
+    }
   }
 }
+
+async function syncToGitHub(repo: string, filePath: string, content: string, token: string) {
+  try {
+    const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+
+    let sha: string | undefined;
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+    }
+
+    await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `chore: update ${filePath} from admin control hub`,
+        content: Buffer.from(content).toString("base64"),
+        sha,
+      }),
+    });
+  } catch (err) {
+    console.warn("Error during GitHub auto-commit for links:", err);
+  }
+}
+
 
 function isAuthorized(req: NextRequest): boolean {
   const sessionToken = req.cookies.get("portfolio_admin_token")?.value;

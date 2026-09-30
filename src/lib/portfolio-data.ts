@@ -78,12 +78,36 @@ export interface PortfolioData {
 }
 
 const DATA_FILE_PATH = path.join(process.cwd(), "src", "data", "portfolio.json");
+const TMP_FILE_PATH = path.join("/tmp", "portfolio_cache.json");
+
+// In-memory runtime cache for serverless environments
+let memoryCache: PortfolioData | null = null;
 
 export function getPortfolioData(): PortfolioData {
+  // 1. Check in-memory cache
+  if (memoryCache) {
+    return memoryCache;
+  }
+
+  // 2. Check /tmp cache (if available)
+  try {
+    if (fs.existsSync(TMP_FILE_PATH)) {
+      const tmpContent = fs.readFileSync(TMP_FILE_PATH, "utf8");
+      const parsed = JSON.parse(tmpContent);
+      memoryCache = parsed;
+      return parsed;
+    }
+  } catch (err) {
+    // ignore tmp read error
+  }
+
+  // 3. Check persistent static file
   try {
     if (fs.existsSync(DATA_FILE_PATH)) {
       const content = fs.readFileSync(DATA_FILE_PATH, "utf8");
-      return JSON.parse(content);
+      const parsed = JSON.parse(content);
+      memoryCache = parsed;
+      return parsed;
     }
   } catch (error) {
     console.error("Error reading portfolio.json:", error);
@@ -93,7 +117,7 @@ export function getPortfolioData(): PortfolioData {
   return {
     name: "Rishabh Tripathi",
     initials: "RT",
-    url: "https://rishabhtripathi.vercel.app",
+    url: "https://rishabh-tripathi-xi.vercel.app",
     location: "New Delhi, India",
     locationLink: "https://www.google.com/maps/place/newdelhi",
     description: "B.Tech Student & Full-Stack Developer passionate about building AI-powered applications.",
@@ -116,6 +140,18 @@ export function getPortfolioData(): PortfolioData {
 }
 
 export function savePortfolioData(data: PortfolioData): boolean {
+  memoryCache = data;
+
+  // 1. If GitHub Token is available, sync to GitHub repository in the background
+  const githubToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  const repo = process.env.GITHUB_REPO || "Rishabh503/rishabh-tripathi";
+  if (githubToken) {
+    syncToGitHub(repo, "src/data/portfolio.json", JSON.stringify(data, null, 2), githubToken).catch((e) =>
+      console.warn("GitHub auto-sync warning:", e)
+    );
+  }
+
+  // 2. Try writing to local project directory
   try {
     const dir = path.dirname(DATA_FILE_PATH);
     if (!fs.existsSync(dir)) {
@@ -124,7 +160,55 @@ export function savePortfolioData(data: PortfolioData): boolean {
     fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
     return true;
   } catch (error) {
-    console.error("Error saving portfolio.json:", error);
-    return false;
+    // 3. Fallback to /tmp filesystem for serverless runtimes
+    try {
+      if (!fs.existsSync("/tmp")) {
+        fs.mkdirSync("/tmp", { recursive: true });
+      }
+      fs.writeFileSync(TMP_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
+      return true;
+    } catch (tmpErr) {
+      console.warn("Could not write to /tmp cache, retained in memoryCache:", tmpErr);
+      return true; // Still return true since memoryCache is updated
+    }
   }
 }
+
+async function syncToGitHub(repo: string, filePath: string, content: string, token: string) {
+  try {
+    const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+
+    let sha: string | undefined;
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+    }
+
+    const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `chore: update ${filePath} from admin control hub`,
+        content: Buffer.from(content).toString("base64"),
+        sha,
+      }),
+    });
+
+    if (!putRes.ok) {
+      const errText = await putRes.text();
+      console.warn("Failed to commit changes to GitHub repo:", errText);
+    }
+  } catch (err) {
+    console.warn("Error during GitHub auto-commit:", err);
+  }
+}
+

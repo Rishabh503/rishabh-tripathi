@@ -1,7 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { v2 as cloudinary } from "cloudinary";
 import { verifyAdminPassword, verifySessionToken } from "@/lib/admin-auth";
+
+// Configure Cloudinary if environment variables exist
+if (
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
+  });
+} else if (process.env.CLOUDINARY_URL) {
+  cloudinary.config({
+    cloudinary_url: process.env.CLOUDINARY_URL,
+    secure: true,
+  });
+}
 
 function isAuthorized(req: NextRequest): boolean {
   const sessionToken = req.cookies.get("portfolio_admin_token")?.value;
@@ -37,7 +57,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate file type
-    const mimeType = file.type;
+    const mimeType = file.type || "image/png";
     const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
     if (!validTypes.includes(mimeType) && !file.name.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i)) {
       return NextResponse.json(
@@ -46,19 +66,48 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Limit file size (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
+    // Limit file size (15MB max)
+    if (file.size > 15 * 1024 * 1024) {
       return NextResponse.json(
-        { success: false, error: "File size exceeds 10MB limit." },
+        { success: false, error: "File size exceeds 15MB limit." },
         { status: 400 }
       );
     }
 
-    // Target upload directory (if filesystem is writable)
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
     const sanitizedFolder = folder === "uploads" ? "uploads" : "projects";
-    const uploadDir = path.join(process.cwd(), "public", sanitizedFolder);
+    const base64Data = `data:${mimeType};base64,${buffer.toString("base64")}`;
 
-    // Create safe unique filename
+    // 1. Cloudinary Integration (if configured in env)
+    const isCloudinaryConfigured =
+      (process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET) ||
+      !!process.env.CLOUDINARY_URL;
+
+    if (isCloudinaryConfigured) {
+      try {
+        const uploadRes = await cloudinary.uploader.upload(base64Data, {
+          folder: `portfolio_${sanitizedFolder}`,
+          resource_type: "image",
+          transformation: [{ quality: "auto", fetch_format: "auto" }],
+        });
+
+        return NextResponse.json({
+          success: true,
+          url: uploadRes.secure_url,
+          filename: uploadRes.public_id,
+          provider: "cloudinary",
+          message: "Uploaded to Cloudinary CDN successfully!",
+        });
+      } catch (cloudErr: any) {
+        console.error("Cloudinary upload failed, falling back:", cloudErr);
+      }
+    }
+
+    // 2. Local Filesystem Write (when running locally / with write permissions)
+    const uploadDir = path.join(process.cwd(), "public", sanitizedFolder);
     const originalName = file.name;
     const ext = path.extname(originalName) || ".png";
     const baseName = path
@@ -67,9 +116,6 @@ export async function POST(req: NextRequest) {
       .toLowerCase();
     const filename = `${baseName}_${Date.now()}${ext}`;
     const filePath = path.join(uploadDir, filename);
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
     const relativeUrl = `/${sanitizedFolder}/${filename}`;
 
     try {
@@ -82,17 +128,17 @@ export async function POST(req: NextRequest) {
         success: true,
         url: relativeUrl,
         filename,
-        message: "Image saved successfully.",
+        provider: "local",
+        message: "Image saved to local storage.",
       });
     } catch (fsErr) {
-      // Serverless (e.g. Vercel) read-only filesystem fallback
-      console.log("Serverless read-only filesystem detected. Falling back to data URI.");
-      const base64Url = `data:${mimeType || "image/png"};base64,${buffer.toString("base64")}`;
+      // 3. Serverless Read-Only Fallback (Data URI)
       return NextResponse.json({
         success: true,
-        url: base64Url,
+        url: base64Data,
         filename,
-        message: "Image processed successfully.",
+        provider: "base64",
+        message: "Image processed as data URI for serverless runtime.",
       });
     }
   } catch (err: any) {
@@ -103,4 +149,5 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 
