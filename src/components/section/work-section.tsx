@@ -67,23 +67,24 @@ export default function WorkSection({ work }: { work?: WorkEntry[] }) {
                     </span>
                   </div>
                   <div className="font-sans text-sm text-muted-foreground">
-                    {work.title}
+                    {item.title}
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-1 text-xs tabular-nums text-muted-foreground text-right flex-none">
                 <span>
-                  {work.start} - {work.end ?? "Present"}
+                  {item.start} - {item.end ?? "Present"}
                 </span>
               </div>
             </div>
           </AccordionTrigger>
           <AccordionContent className="p-0 ml-13 text-xs sm:text-sm text-muted-foreground">
-            {work.description}
+            {item.description}
           </AccordionContent>
         </AccordionItem>
       ))}
     </Accordion>
   );
 }
+
 

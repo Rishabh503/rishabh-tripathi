@@ -1,5 +1,4 @@
-import fs from "fs";
-import path from "path";
+import rawDefaultPortfolio from "@/data/portfolio.json";
 
 export interface ProjectLink {
   type: string;
@@ -77,11 +76,23 @@ export interface PortfolioData {
   };
 }
 
-const DATA_FILE_PATH = path.join(process.cwd(), "src", "data", "portfolio.json");
-const TMP_FILE_PATH = path.join("/tmp", "portfolio_cache.json");
-
 // In-memory runtime cache for serverless environments
 let memoryCache: PortfolioData | null = null;
+
+function getFsAndPath() {
+  try {
+    if (typeof window === "undefined" && typeof process !== "undefined" && process.versions?.node) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const fs = require("fs");
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const path = require("path");
+      return { fs, path };
+    }
+  } catch (e) {
+    // Edge or browser runtime
+  }
+  return null;
+}
 
 export function getPortfolioData(): PortfolioData {
   // 1. Check in-memory cache
@@ -89,32 +100,39 @@ export function getPortfolioData(): PortfolioData {
     return memoryCache;
   }
 
-  // 2. Check /tmp cache (if available)
-  try {
-    if (fs.existsSync(TMP_FILE_PATH)) {
-      const tmpContent = fs.readFileSync(TMP_FILE_PATH, "utf8");
-      const parsed = JSON.parse(tmpContent);
-      memoryCache = parsed;
-      return parsed;
+  const nodeModules = getFsAndPath();
+  if (nodeModules) {
+    const { fs, path } = nodeModules;
+    const TMP_FILE_PATH = path.join("/tmp", "portfolio_cache.json");
+    const DATA_FILE_PATH = path.join(process.cwd(), "src", "data", "portfolio.json");
+
+    // 2. Check /tmp cache (if available)
+    try {
+      if (fs.existsSync(TMP_FILE_PATH)) {
+        const tmpContent = fs.readFileSync(TMP_FILE_PATH, "utf8");
+        const parsed = JSON.parse(tmpContent);
+        memoryCache = parsed;
+        return parsed;
+      }
+    } catch (err) {
+      // ignore tmp read error
     }
-  } catch (err) {
-    // ignore tmp read error
+
+    // 3. Check persistent static file
+    try {
+      if (fs.existsSync(DATA_FILE_PATH)) {
+        const content = fs.readFileSync(DATA_FILE_PATH, "utf8");
+        const parsed = JSON.parse(content);
+        memoryCache = parsed;
+        return parsed;
+      }
+    } catch (error) {
+      console.error("Error reading portfolio.json:", error);
+    }
   }
 
-  // 3. Check persistent static file
-  try {
-    if (fs.existsSync(DATA_FILE_PATH)) {
-      const content = fs.readFileSync(DATA_FILE_PATH, "utf8");
-      const parsed = JSON.parse(content);
-      memoryCache = parsed;
-      return parsed;
-    }
-  } catch (error) {
-    console.error("Error reading portfolio.json:", error);
-  }
-
-  // Fallback defaults
-  return {
+  // Fallback to static imported json
+  return (rawDefaultPortfolio as unknown as PortfolioData) || {
     name: "Rishabh Tripathi",
     initials: "RT",
     url: "https://rishabh-tripathi-xi.vercel.app",
@@ -151,28 +169,38 @@ export function savePortfolioData(data: PortfolioData): boolean {
     );
   }
 
-  // 2. Try writing to local project directory
-  try {
-    const dir = path.dirname(DATA_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
-    return true;
-  } catch (error) {
-    // 3. Fallback to /tmp filesystem for serverless runtimes
+  const nodeModules = getFsAndPath();
+  if (nodeModules) {
+    const { fs, path } = nodeModules;
+    const DATA_FILE_PATH = path.join(process.cwd(), "src", "data", "portfolio.json");
+    const TMP_FILE_PATH = path.join("/tmp", "portfolio_cache.json");
+
+    // 2. Try writing to local project directory
     try {
-      if (!fs.existsSync("/tmp")) {
-        fs.mkdirSync("/tmp", { recursive: true });
+      const dir = path.dirname(DATA_FILE_PATH);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
       }
-      fs.writeFileSync(TMP_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
+      fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
       return true;
-    } catch (tmpErr) {
-      console.warn("Could not write to /tmp cache, retained in memoryCache:", tmpErr);
-      return true; // Still return true since memoryCache is updated
+    } catch (error) {
+      // 3. Fallback to /tmp filesystem for serverless runtimes
+      try {
+        if (!fs.existsSync("/tmp")) {
+          fs.mkdirSync("/tmp", { recursive: true });
+        }
+        fs.writeFileSync(TMP_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
+        return true;
+      } catch (tmpErr) {
+        console.warn("Could not write to /tmp cache, retained in memoryCache:", tmpErr);
+        return true;
+      }
     }
   }
+
+  return true;
 }
+
 
 async function syncToGitHub(repo: string, filePath: string, content: string, token: string) {
   try {
