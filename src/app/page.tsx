@@ -11,6 +11,7 @@ import WorkSection from "@/components/section/work-section";
 import { ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -64,7 +65,7 @@ export default function Page() {
             <h2 className="text-xl font-bold">Work Experience</h2>
           </BlurFade>
           <BlurFade delay={BLUR_FADE_DELAY * 6}>
-            <WorkSection />
+            <WorkSection work={data.work} />
           </BlurFade>
         </div>
       </section>
@@ -140,9 +141,10 @@ export default function Page() {
       </section>
       <section id="contact">
         <BlurFade delay={BLUR_FADE_DELAY * 16}>
-          <ContactSection />
+          <ContactSection contact={data.contact} />
         </BlurFade>
       </section>
     </main>
   );
 }
+
