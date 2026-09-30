@@ -54,12 +54,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Target upload directory
+    // Target upload directory (if filesystem is writable)
     const sanitizedFolder = folder === "uploads" ? "uploads" : "projects";
     const uploadDir = path.join(process.cwd(), "public", sanitizedFolder);
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
 
     // Create safe unique filename
     const originalName = file.name;
@@ -73,16 +70,31 @@ export async function POST(req: NextRequest) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    fs.writeFileSync(filePath, buffer);
-
     const relativeUrl = `/${sanitizedFolder}/${filename}`;
 
-    return NextResponse.json({
-      success: true,
-      url: relativeUrl,
-      filename,
-      message: "Image uploaded successfully.",
-    });
+    try {
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      fs.writeFileSync(filePath, buffer);
+
+      return NextResponse.json({
+        success: true,
+        url: relativeUrl,
+        filename,
+        message: "Image saved successfully.",
+      });
+    } catch (fsErr) {
+      // Serverless (e.g. Vercel) read-only filesystem fallback
+      console.log("Serverless read-only filesystem detected. Falling back to data URI.");
+      const base64Url = `data:${mimeType || "image/png"};base64,${buffer.toString("base64")}`;
+      return NextResponse.json({
+        success: true,
+        url: base64Url,
+        filename,
+        message: "Image processed successfully.",
+      });
+    }
   } catch (err: any) {
     console.error("Upload error:", err);
     return NextResponse.json(
@@ -91,3 +103,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

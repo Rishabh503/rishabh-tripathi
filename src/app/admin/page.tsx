@@ -240,32 +240,80 @@ export default function AdminPage() {
     }
   };
 
+  const compressImageFile = (file: File, maxWidth = 1600, quality = 0.85): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve((e.target?.result as string) || "");
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl =
+            canvas.toDataURL("image/webp", quality) ||
+            canvas.toDataURL("image/jpeg", quality) ||
+            (e.target?.result as string);
+          resolve(dataUrl);
+        };
+        img.onerror = () => resolve((e.target?.result as string) || "");
+        img.src = (e.target?.result as string) || "";
+      };
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleFileUpload = async (file: File, target: "project" | "avatar") => {
     if (!file) return;
     setUploadingImage(true);
     try {
+      // 1. Generate ultra-fast compressed client preview / fallback
+      const compressedDataUrl = await compressImageFile(file);
+
+      // 2. Attempt server upload
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folder", target === "project" ? "projects" : "uploads");
 
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
+      let finalUrl = compressedDataUrl;
 
-      if (res.ok && data.success) {
-        if (target === "project" && editingProject) {
-          setEditingProject({ ...editingProject, image: data.url });
-        } else if (target === "avatar" && portfolioData) {
-          setPortfolioData({ ...portfolioData, avatarUrl: data.url });
+      try {
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (res.ok && data.success && data.url) {
+          finalUrl = data.url;
         }
-        notify("success", `Image "${file.name}" uploaded successfully!`);
-      } else {
-        notify("error", data.error || "Failed to upload image.");
+      } catch (uploadErr) {
+        console.warn("Server upload fallback to client compressed image:", uploadErr);
       }
-    } catch (err) {
-      notify("error", "Network error while uploading image.");
+
+      if (target === "project" && editingProject) {
+        setEditingProject({ ...editingProject, image: finalUrl });
+      } else if (target === "avatar" && portfolioData) {
+        setPortfolioData({ ...portfolioData, avatarUrl: finalUrl });
+      }
+
+      notify("success", `Image "${file.name}" uploaded & optimized! Remember to click "Save All Changes".`);
+    } catch (err: any) {
+      notify("error", err.message || "Failed to process image.");
     } finally {
       setUploadingImage(false);
     }
