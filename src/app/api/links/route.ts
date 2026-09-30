@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { verifyAdminPassword, verifySessionToken } from "@/lib/admin-auth";
+import { getDbStorageItem, setDbStorageItem } from "@/lib/db";
 
 const DATA_FILE_PATH = path.join(
   process.cwd(),
@@ -104,7 +105,6 @@ function getLinksFromFile() {
 function saveLinksToFile(links: any[]) {
   linksMemoryCache = links;
 
-  // Sync to GitHub repo if GITHUB_TOKEN is available
   const githubToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   const repo = process.env.GITHUB_REPO || "Rishabh503/rishabh-tripathi";
   if (githubToken) {
@@ -133,6 +133,31 @@ function saveLinksToFile(links: any[]) {
     }
   }
 }
+
+async function getLinksFromDbOrFile() {
+  const fallbackLinks = getLinksFromFile();
+  try {
+    const dbLinks = await getDbStorageItem<any[]>("links", fallbackLinks);
+    if (Array.isArray(dbLinks) && dbLinks.length > 0) {
+      linksMemoryCache = dbLinks;
+      return dbLinks.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+    }
+  } catch (e) {
+    console.warn("Could not fetch links from Neon DB:", e);
+  }
+  return fallbackLinks;
+}
+
+async function saveLinksToDbAndFile(links: any[]) {
+  saveLinksToFile(links);
+  try {
+    await setDbStorageItem("links", links);
+  } catch (e) {
+    console.warn("Could not save links to Neon DB:", e);
+  }
+  return true;
+}
+
 
 async function syncToGitHub(repo: string, filePath: string, content: string, token: string) {
   try {
@@ -182,7 +207,7 @@ function isAuthorized(req: NextRequest): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const links = getLinksFromFile();
+  const links = await getLinksFromDbOrFile();
   const authorized = isAuthorized(request);
 
   return NextResponse.json({
@@ -215,7 +240,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const saved = saveLinksToFile(links);
+    const saved = await saveLinksToDbAndFile(links);
     if (!saved) {
       return NextResponse.json(
         { success: false, error: "Failed to persist changes." },
@@ -231,4 +256,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 

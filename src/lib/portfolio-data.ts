@@ -1,4 +1,6 @@
 import rawDefaultPortfolio from "@/data/portfolio.json";
+import { getDbStorageItem, setDbStorageItem } from "@/lib/db";
+
 
 export interface ProjectLink {
   type: string;
@@ -200,6 +202,34 @@ export function savePortfolioData(data: PortfolioData): boolean {
 
   return true;
 }
+
+export async function getPortfolioDataAsync(): Promise<PortfolioData> {
+  const defaultData = getPortfolioData();
+  try {
+    const dbData = await getDbStorageItem<PortfolioData>("portfolio", defaultData);
+    if (dbData && dbData.projects) {
+      memoryCache = dbData;
+      return dbData;
+    }
+  } catch (err) {
+    console.warn("Could not fetch from Neon DB:", err);
+  }
+  return defaultData;
+}
+
+export async function savePortfolioDataAsync(data: PortfolioData): Promise<boolean> {
+  savePortfolioData(data);
+  try {
+    const savedToDb = await setDbStorageItem("portfolio", data);
+    if (savedToDb) {
+      console.log("[NeonDB] Portfolio saved successfully to cloud database.");
+    }
+  } catch (err) {
+    console.warn("Could not save to Neon DB:", err);
+  }
+  return true;
+}
+
 
 
 async function syncToGitHub(repo: string, filePath: string, content: string, token: string) {

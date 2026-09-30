@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getPortfolioData,
-  savePortfolioData,
+  getPortfolioDataAsync,
+  savePortfolioDataAsync,
   PortfolioData,
 } from "@/lib/portfolio-data";
 import {
@@ -23,8 +23,7 @@ function isAuthorized(req: NextRequest): boolean {
 }
 
 export async function GET(req: NextRequest) {
-  // Public GET can fetch portfolio data, or we can check auth for private fields
-  const data = getPortfolioData();
+  const data = await getPortfolioDataAsync();
   const authorized = isAuthorized(req);
 
   return NextResponse.json({
@@ -59,7 +58,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const saved = savePortfolioData(data);
+    const saved = await savePortfolioDataAsync(data);
     if (!saved) {
       return NextResponse.json(
         { success: false, error: "Failed to write changes to portfolio storage." },
@@ -72,6 +71,7 @@ export async function POST(req: NextRequest) {
       message: "Portfolio data updated successfully.",
       data,
     });
+
   } catch (err: any) {
     return NextResponse.json(
       { success: false, error: err.message || "An unexpected error occurred." },

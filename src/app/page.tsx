@@ -2,7 +2,7 @@
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getResumeData } from "@/data/resume";
+import { getResumeDataAsync } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
 import ContactSection from "@/components/section/contact-section";
@@ -15,8 +15,9 @@ export const revalidate = 0;
 
 const BLUR_FADE_DELAY = 0.04;
 
-export default function Page() {
-  const data = getResumeData();
+export default async function Page() {
+  const data = await getResumeDataAsync();
+
 
   return (
     <main className="min-h-dvh flex flex-col gap-14 relative">

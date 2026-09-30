@@ -1,7 +1,7 @@
 import { Icons } from "@/components/icons";
 import { HomeIcon } from "lucide-react";
 import rawPortfolioData from "./portfolio.json";
-import { getPortfolioData } from "@/lib/portfolio-data";
+import { getPortfolioData, getPortfolioDataAsync } from "@/lib/portfolio-data";
 import { getSkillIconComponent, renderProjectLinkIcon } from "@/lib/icon-helper";
 import React from "react";
 
@@ -175,6 +175,19 @@ export function getResumeData(): ResumeData {
     console.warn("Could not load dynamic portfolio data, falling back to static:", err);
   }
   return buildResumeData(rawPortfolioData);
+}
+
+
+export async function getResumeDataAsync(): Promise<ResumeData> {
+  try {
+    const liveData = await getPortfolioDataAsync();
+    if (liveData && liveData.projects) {
+      return buildResumeData(liveData);
+    }
+  } catch (err) {
+    console.warn("Could not load async portfolio data, falling back:", err);
+  }
+  return getResumeData();
 }
 
 export const DATA: ResumeData = buildResumeData(rawPortfolioData);
